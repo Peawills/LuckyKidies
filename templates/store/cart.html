@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - LuckyKidies{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">🛒 Your Shopping Cart</h1>
+
+    {% if cart.items.all %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart.items.all %}
+                    <tr>
+                        <td class="d-flex align-items-center">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail me-3 product-image" style="width: 80px; height: auto;">
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ item.product.name }}</h6>
+                                <small class="text-muted product-category">{{ item.product.condition|title }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group quantity-control" style="max-width: 150px;">
+                                <button class="btn btn-outline-secondary update-quantity" data-item-id="{{ item.id }}" data-action="decrease">-</button>
+                                <input type="number" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1" data-item-id="{{ item.id }}">
+                                <button class="btn btn-outline-secondary update-quantity" data-item-id="{{ item.id }}" data-action="increase">+</button>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-sm remove-item" data-item-id="{{ item.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+            </a>
+            <div>
+                <a href="#" class="btn btn-success me-2" id="whatsapp-checkout">
+                    <i class="fab fa-whatsapp me-2"></i> Checkout via WhatsApp
+                </a>
+              
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <p class="fs-5">Your cart is empty. Start shopping now!</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-2">
+                <i class="fas fa-shopping-bag me-2"></i> Shop Now
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update quantity
+        const updateQuantity = async (itemId, quantity) => {
+            try {
+                const response = await fetch(`/cart/update/${itemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `quantity=${quantity}`
+                });
+                const data = await response.json();
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        // Remove item
+        const removeItem = async (itemId) => {
+            if (confirm('Are you sure you want to remove this item?')) {
+                try {
+                    const response = await fetch(`/cart/remove/${itemId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        };
+
+        // WhatsApp checkout
+        const whatsappCheckout = document.getElementById('whatsapp-checkout');
+        if (whatsappCheckout) {
+            whatsappCheckout.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                const cartItems = [];
+                document.querySelectorAll('tbody tr').forEach(row => {
+                    const productName = row.querySelector('h6')?.textContent || "Unknown Product";
+                    const quantity = row.querySelector('.quantity-input')?.value || "1";
+                    const category = row.querySelector('.product-category')?.textContent || "Unknown Category";
+                    const imageUrl = row.querySelector('.product-image')?.src || "";
+
+                    cartItems.push({
+                        productName,
+                        quantity,
+                        category,
+                        imageUrl
+                    });
+                });
+
+                let message = "Hello! I'm interested in these items:\n\n";
+                cartItems.forEach(item => {
+                    message += `- ${item.productName} (Category: ${item.category}, Quantity: ${item.quantity}, Image: ${item.imageUrl})\n`;
+                });
+                message += `\n\nPlease confirm availability.`;
+
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappNumber = "{{ whatsapp_number }}".replace(/\D/g, '');
+
+                if (whatsappNumber) {
+                    window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+                } else {
+                    alert("WhatsApp number is missing. Please contact support.");
+                }
+            });
+        }
+
+        // Event listeners
+        document.querySelectorAll('.update-quantity').forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.dataset.itemId;
+                const action = this.dataset.action;
+                const input = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
+                let quantity = parseInt(input.value);
+
+                if (action === 'increase') {
+                    quantity += 1;
+                } else if (action === 'decrease' && quantity > 1) {
+                    quantity -= 1;
+                }
+
+                input.value = quantity;
+                updateQuantity(itemId, quantity);
+            });
+        });
+
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const itemId = this.dataset.itemId;
+                const quantity = parseInt(this.value);
+                if (quantity > 0) {
+                    updateQuantity(itemId, quantity);
+                }
+            });
+        });
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.dataset.itemId;
+                removeItem(itemId);
+            });
+        });
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

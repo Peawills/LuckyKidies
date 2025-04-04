@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - LuckyKidies{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ product.name }}</h1>
+            <p class="text-muted mb-3">Category: 
+                <a href="{% url 'products_by_category' product.category.slug %}">
+                    {{ product.category.name }}
+                </a>
+            </p>
+            
+            <div class="mb-3">
+                <span class="badge {% if product.condition == 'new' %}bg-primary{% else %}bg-success{% endif %}">
+                    {{ product.condition|title }}
+                </span>
+            </div>
+
+            <!-- Removed Price Section -->
+
+            <div class="mb-4">
+                <h5>Description:</h5>
+                <p>{{ product.description }}</p>
+            </div>
+
+            {% if product.stock <= 0 %}
+            <div class="alert alert-warning">
+                Out of Stock
+            </div>
+            {% else %}
+            <div class="d-flex gap-2 mb-4">
+                <select class="form-select w-auto" id="quantity" aria-label="Select quantity">
+                    {% for i in "12345" %}
+                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary" id="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+            </div>
+            <p class="text-success">In Stock ({{ product.stock }} available)</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const quantitySelect = document.getElementById('quantity');
+        
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', async function() {
+                const productId = this.dataset.productId;
+                const quantity = quantitySelect.value;
+                
+                try {
+                    const response = await fetch(`/cart/add/${productId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: `quantity=${quantity}`
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Show success message
+                        alert(data.message);
+                        
+                        // Update cart count in navbar if it exists
+                        const cartCountElement = document.getElementById('cart-count');
+                        if (cartCountElement) {
+                            cartCountElement.textContent = data.cart_count;
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding to cart.');
+                }
+            });
+        }
+        
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

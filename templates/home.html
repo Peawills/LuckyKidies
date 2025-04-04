@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}LuckyKidies - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-light p-5 rounded-lg text-center mb-4 shadow-sm">
+    <h1 class="display-4 fw-bold">
+        Welcome to <span class="text-success">LuckyKidies Wears</span>
+    </h1>
+    <p class="lead text-muted">Discover amazing deals on both new and thrift clothing!</p>
+    <hr class="my-4">
+    <p>Browse our collection of carefully curated clothing items.</p>
+    <div class="d-flex justify-content-center gap-3">
+        <a class="btn btn-primary btn-lg px-4" href="{% url 'new_clothing' %}">Shop New</a>
+        <a class="btn btn-success btn-lg px-4" href="{% url 'thrift_clothing' %}">Shop Thrift</a>
+    </div>
+</div>
+
+<!-- Featured Products Section -->
+<h2 class="mb-4 fw-bold text-center">Featured Products</h2>
+<div class="row g-4">
+    {% for product in products|slice:":8" %}
+    <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100 shadow-sm border-0">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% endif %}
+            <div class="card-body text-center">
+                <h5 class="card-title fw-bold">{{ product.name }}</h5>
+                <p class="card-text text-muted">{{ product.condition|title }}</p>
+                <a href="{{ product.get_url }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <p class="text-muted">No featured products available. <a href="{% url 'new_clothing' %}">Browse New Collection</a> or <a href="{% url 'thrift_clothing' %}">Shop Thrift</a>.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Categories Section -->
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <h3 class="fw-bold">New Clothing</h3>
+                <p class="text-muted">Discover the latest fashion trends.</p>
+                <a href="{% url 'new_clothing' %}" class="btn btn-outline-primary">Browse New Collection</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <h3 class="fw-bold">Thrift Clothing</h3>
+                <p class="text-muted">Sustainable fashion at amazing prices.</p>
+                <a href="{% url 'thrift_clothing' %}" class="btn btn-outline-success">Browse Thrift Collection</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
