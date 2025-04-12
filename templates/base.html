@@ -1,114 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}LuckyKidies{% endblock %}</title>
-    
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
     {% block extra_css %}{% endblock %}
-    
+
     <style>
-        /* Dropdown hover effect for desktop */
-        @media (min-width: 992px) {
-            .navbar-nav .dropdown:hover .dropdown-menu {
-                display: block;
-                margin-top: 0;
-            }
+      /* Dropdown hover effect for desktop */
+      @media (min-width: 992px) {
+        .navbar-nav .dropdown:hover .dropdown-menu {
+          display: block;
+          margin-top: 0;
         }
+      }
+      .logo-k {
+        color: black;
+        font: 40px sans-serif;
+      }
+     
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home' %}">LuckyKidies</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <nav class="navbar navbar-expand-lg navbar-light border-bottom">
+      <div class="container ">
+        <a class="navbar-brand fw-bold logo-k" href="{% url 'home' %}"
+          >Lucky<span class="text-success">Kidies</span></a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse m-6" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle fw-bold"
+                href="{% url 'new_clothing' %}"
+                id="newDropdown"
+                >New Clothing</a
+              >
+              <ul class="dropdown-menu" aria-labelledby="newDropdown">
+                {% for category in new_categories %}
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'category_products' category.slug %}"
+                    >{{ category.name }}</a
+                  >
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="{% url 'thrift_clothing' %}"
+                id="thriftDropdown"
+                >Thrift Clothing</a
+              >
+              <ul class="dropdown-menu" aria-labelledby="thriftDropdown">
+                {% for category in thrift_categories %}
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'category_products' category.slug %}"
+                    >{{ category.name }}</a
+                  >
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+
+          <!-- Search Bar -->
+          <form class="d-flex me-3" action="{% url 'search' %}" method="GET">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search products..."
+              name="q"
+              required
+            />
+            <button class="btn-success btn-outline-black" type="submit">
+              <i class="fas fa-search"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{% url 'new_clothing' %}" id="newDropdown">New Clothing</a>
-                        <ul class="dropdown-menu" aria-labelledby="newDropdown">
-                            {% for category in new_categories %}
-                            <li><a class="dropdown-item" href="{% url 'category_products' category.slug %}">{{ category.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{% url 'thrift_clothing' %}" id="thriftDropdown">Thrift Clothing</a>
-                        <ul class="dropdown-menu" aria-labelledby="thriftDropdown">
-                            {% for category in thrift_categories %}
-                            <li><a class="dropdown-item" href="{% url 'category_products' category.slug %}">{{ category.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-                
-                <!-- Search Bar -->
-                <form class="d-flex me-3" action="{% url 'search' %}" method="GET">
-                    <input class="form-control me-2" type="search" placeholder="Search products..." name="q" required>
-                    <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
-                </form>
-                
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart_detail' %}">Cart 🛒</a>
-                    </li>
-                </ul>
-            </div>
+          </form>
+
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link fs-3 fw-bold" href="{% url 'cart_detail' %}"
+                >Cart 🛒</a
+              >
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div class="container mt-4">
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
         </div>
-        {% endif %}
-        
-        {% block content %}{% endblock %}
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
     </div>
 
     <!-- Footer -->
     <footer class="bg-dark text-white mt-5 py-4">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>Your one-stop shop for both new and thrift clothing.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'new_clothing' %}" class="text-white">New Clothing</a></li>
-                        <li><a href="{% url 'thrift_clothing' %}" class="text-white">Thrift Clothing</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
-                    <p>Email: info@LuckyKidies.com<br>Phone: (123) 456-7890</p>
-                </div>
-            </div>
-            <hr class="bg-light">
-            <p class="text-center">&copy; 2025 LuckyKidies. All Rights Reserved.</p>
+      <div class="container text-center">
+        <div class="row">
+          <div class="col-md-4">
+            <h5>About Us</h5>
+            <p>Your one-stop shop for both new and thrift clothing.</p>
+          </div>
+          <div class="col-md-4">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="{% url 'new_clothing' %}" class="text-white"
+                  >New Clothing</a
+                >
+              </li>
+              <li>
+                <a href="{% url 'thrift_clothing' %}" class="text-white"
+                  >Thrift Clothing</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Contact Us</h5>
+            <p>Email: info@LuckyKidies.com<br />Phone: (123) 456-7890</p>
+          </div>
         </div>
+        <hr class="bg-light" />
+        <p class="text-center">&copy; 2025 LuckyKidies. All Rights Reserved.</p>
+      </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
-</body>
+  </body>
 </html>

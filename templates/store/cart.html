@@ -55,7 +55,6 @@
                 <a href="#" class="btn btn-success me-2" id="whatsapp-checkout">
                     <i class="fab fa-whatsapp me-2"></i> Checkout via WhatsApp
                 </a>
-              
             </div>
         </div>
     {% else %}
@@ -143,13 +142,32 @@
                 cartItems.forEach(item => {
                     message += `- ${item.productName} (Category: ${item.category}, Quantity: ${item.quantity}, Image: ${item.imageUrl})\n`;
                 });
-                message += `\n\nPlease confirm availability.`;
+                message += `\n\nPlease confirm availability and price.`;
 
                 const encodedMessage = encodeURIComponent(message);
                 const whatsappNumber = "{{ whatsapp_number }}".replace(/\D/g, '');
 
                 if (whatsappNumber) {
                     window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+
+                    // Clear the session after sending the WhatsApp message
+                    fetch("{% url 'clear-session' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                        if (data.success) {
+                            // Redirect to home or reload
+                            location.href = "{% url 'home' %}";
+                        } else {
+                            alert("Failed to clear session. Please try again.");
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
                 } else {
                     alert("WhatsApp number is missing. Please contact support.");
                 }
