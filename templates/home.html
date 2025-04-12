@@ -1,65 +1,77 @@
 {% extends 'base.html' %}
-
+{% load static %} 
 {% block title %}LuckyKidies - Home{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<div class="bg-light p-5 rounded-lg text-center mb-4 shadow-sm">
-    <h1 class="display-4 fw-bold">
-        Welcome to <span class="text-success">LuckyKidies Wears</span>
-    </h1>
-    <p class="lead text-muted">Discover amazing deals on both new and thrift clothing!</p>
-    <hr class="my-4">
-    <p>Browse our collection of carefully curated clothing items.</p>
-    <div class="d-flex justify-content-center gap-3">
-        <a class="btn btn-primary btn-lg px-4" href="{% url 'new_clothing' %}">Shop New</a>
-        <a class="btn btn-success btn-lg px-4" href="{% url 'thrift_clothing' %}">Shop Thrift</a>
-    </div>
-</div>
+<section class="bg-light p-5 rounded-4 text-center shadow-lg position-relative overflow-hidden">
+  <h1 class="display-4 fw-bold text-dark mb-3">
+    Welcome to <span class="text-success">LuckyKidies Wears</span>
+  </h1>
+  <p class="lead text-secondary mb-4">Amazing deals on new and thrift clothing just for you.</p>
+  <a class="btn btn-primary btn-lg px-5 py-3 me-3 shadow-sm" href="{% url 'new_clothing' %}">
+    <i class="fas fa-tshirt me-2"></i> Shop New
+  </a>
+  <a class="btn btn-success btn-lg px-5 py-3 shadow-sm" href="{% url 'thrift_clothing' %}">
+    <i class="fas fa-recycle me-2"></i> Shop Thrift
+  </a>
+  <div class="position-absolute bottom-0 end-0 me-3 mb-3 d-none d-md-block">
+    <img src="{% static 'media/photos/image/LuckyK.jpg' %}" alt="Decorative" class="img-fluid rounded-circle border border-3 shadow" style="max-width: 140px;">
+  </div>
+</section>
 
-<!-- Featured Products Section -->
-<h2 class="mb-4 fw-bold text-center">Featured Products</h2>
-<div class="row g-4">
-    {% for product in products|slice:":8" %}
-    <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="card h-100 shadow-sm border-0">
-            {% if product.image %}
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-            {% endif %}
-            <div class="card-body text-center">
-                <h5 class="card-title fw-bold">{{ product.name }}</h5>
-                <p class="card-text text-muted">{{ product.condition|title }}</p>
-                <a href="{{ product.get_url }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
-            </div>
+<!-- Featured Products -->
+<section class="py-5" style="background: linear-gradient(to bottom, #f8f9fa, #e9ecef);">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5 text-primary">Featured Products</h2>
+    <div class="row g-4">
+      {% for product in products|slice:":8" %}
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100 border-0 shadow-sm hover-shadow">
+          {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top rounded-top" alt="{{ product.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h5 class="fw-bold text-dark">{{ product.name }}</h5>
+            <p class="text-muted small">{{ product.condition|title }}</p>
+            <a href="{{ product.get_url }}" class="btn btn-outline-primary btn-sm w-100 mt-2">View Details</a>
+          </div>
         </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center">
+        <p class="text-muted">No featured products yet. <a href="{% url 'new_clothing' %}">Shop New</a> or <a href="{% url 'thrift_clothing' %}">Explore Thrift</a>.</p>
+      </div>
+      {% endfor %}
     </div>
-    {% empty %}
-    <div class="col-12 text-center">
-        <p class="text-muted">No featured products available. <a href="{% url 'new_clothing' %}">Browse New Collection</a> or <a href="{% url 'thrift_clothing' %}">Shop Thrift</a>.</p>
-    </div>
-    {% endfor %}
-</div>
+  </div>
+</section>
 
 <!-- Categories Section -->
-<div class="row mt-5">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center">
-                <h3 class="fw-bold">New Clothing</h3>
-                <p class="text-muted">Discover the latest fashion trends.</p>
-                <a href="{% url 'new_clothing' %}" class="btn btn-outline-primary">Browse New Collection</a>
-            </div>
+<section class="py-5" style="background: linear-gradient(to top, #f8f9fa, #e9ecef);">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 text-center">
+          <div class="card-body">
+            <h3 class="fw-bold text-primary">🛍️ New Clothing</h3>
+            <p class="text-muted">Find the latest fashion styles for your little ones.</p>
+            <a href="{% url 'new_clothing' %}" class="btn btn-outline-primary px-4 py-2 mt-3">Explore New Collection</a>
+          </div>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center">
-                <h3 class="fw-bold">Thrift Clothing</h3>
-                <p class="text-muted">Sustainable fashion at amazing prices.</p>
-                <a href="{% url 'thrift_clothing' %}" class="btn btn-outline-success">Browse Thrift Collection</a>
-            </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100 text-center">
+          <div class="card-body d-flex flex-column justify-content-center">
+            <h3 class="fw-bold text-success">♻️ Thrift Clothing</h3>
+            <p class="text-muted">Affordable, sustainable and stylish — shop pre-loved treasures!</p>
+            <a href="{% url 'thrift_clothing' %}" class="btn btn-success btn-lg mt-auto px-4 py-2">
+              <i class="fas fa-recycle me-2"></i> Browse Thrift Collection
+            </a>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
+  </div>
+</section>
 {% endblock %}
