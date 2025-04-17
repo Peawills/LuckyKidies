@@ -65,6 +65,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'store.context_processors.cart_items_count',
+                'store.context_processors.category_context', 
+                
+
             ],
         },
     },
@@ -118,13 +122,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# URL where static files will be served from (in the browser)
+STATIC_URL = '/static/'
+
+# The location where Django will collect static files (used for production only)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Directories where Django will search for static files (during development)
 STATICFILES_DIRS = [
-    os.path.join( BASE_DIR / 'luckykidies/static'),
+    os.path.join(BASE_DIR, 'static'),  # Corrected path
 ]
-
-
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

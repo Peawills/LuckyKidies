@@ -24,7 +24,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Color(models.Model):
+    name = models.CharField(max_length=100)
+    hex_value = models.CharField(max_length=7, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
+class Size(models.Model):
+    name = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     CONDITION_CHOICES = [
@@ -42,6 +53,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    colors = models.ManyToManyField(Color, blank=True)
+    sizes = models.ManyToManyField(Size, blank=True)
 
     def get_url(self):
         return reverse('product_detail', args=[self.category.slug, self.slug])
@@ -76,4 +89,4 @@ class CartItem(models.Model):
     @property
     def subtotal(self):
         """Since there's no price field, return 0 or implement alternative logic"""
-        return 0  # or another logic if needed
+        return 0  # Or another logic if needed

@@ -7,6 +7,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
+
 def clear_session(request):
     if request.method == 'POST':
         request.session.flush()
@@ -20,12 +21,9 @@ def search(request):
 
 def home(request):
     products = Product.objects.all().filter(is_available=True)
-    new_categories = Category.objects.filter(category_type="new")
-    thrift_categories = Category.objects.filter(category_type="thrift")
+
     context = {
         'products': products,
-        'new_categories': new_categories,
-        'thrift_categories': thrift_categories,
     }
     return render(request, 'home.html', context)
 

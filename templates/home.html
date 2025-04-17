@@ -16,7 +16,7 @@
     <i class="fas fa-recycle me-2"></i> Shop Thrift
   </a>
   <div class="position-absolute bottom-0 end-0 me-3 mb-3 d-none d-md-block">
-    <img src="{% static 'media/photos/image/LuckyK.jpg' %}" alt="Decorative" class="img-fluid rounded-circle border border-3 shadow" style="max-width: 140px;">
+    <img src="{% static 'image/LuckyK.jpg' %}" alt="Decorative" class="img-fluid rounded-circle border border-3 shadow" style="max-width: 140px;">
   </div>
 </section>
 
@@ -29,7 +29,7 @@
       <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="card h-100 border-0 shadow-sm hover-shadow">
           {% if product.image %}
-          <img src="{{ product.image.url }}" class="card-img-top rounded-top" alt="{{ product.name }}">
+          <img src="{{ product.image.url }}" class="card-img-top rounded-top product-img" alt="{{ product.name }}">
           {% endif %}
           <div class="card-body text-center">
             <h5 class="fw-bold text-dark">{{ product.name }}</h5>

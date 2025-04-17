@@ -78,7 +78,9 @@ def update_cart_item_quantity(request, cart_item_id, quantity):
 
 def get_cart_items_count(request):
     """
-    Get the total number of items in the cart
+    Returns the total quantity of all items in the user's cart.
     """
     cart = get_cart(request)
-    return sum(item.quantity for item in cart.items.all()) 
+    items = cart.items.all()
+    total_quantity = sum(item.quantity for item in items)
+    return total_quantity

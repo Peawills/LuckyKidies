@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Cart, CartItem
+from .models import Category, Product, Cart, CartItem, Color, Size
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'is_active')
@@ -11,6 +11,7 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
     list_editable = ('stock', 'is_available')
+    filter_horizontal = ('colors', 'sizes')
 
 class CartItemInline(admin.TabularInline):
     model = CartItem
@@ -25,3 +26,5 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem)
+admin.site.register(Color)
+admin.site.register(Size)

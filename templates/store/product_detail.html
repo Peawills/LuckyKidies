@@ -8,7 +8,7 @@
         <!-- Product Image -->
         <div class="col-md-6 mb-4">
             {% if product.image %}
-            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            <img src="{{ product.image.url }}" class="img-fluid rounded product-img" alt="{{ product.name }}">
             {% endif %}
         </div>
 
@@ -33,84 +33,52 @@
                 <h5>Description:</h5>
                 <p>{{ product.description }}</p>
             </div>
+            
+            <!-- Color Options -->
+            {% if product.colors.all %}
+            <div class="mb-4">
+                <h6>Choose Color</h6>
+                <div class="btn-group btn-group-sm" data-toggle="buttons">
+                    {% for color in product.colors.all %}
+                    <label class="btn btn-outline-secondary">
+                        <input type="radio" name="selected_color" value="{{ color.id }}"> {{ color.name }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Size Options -->
+            {% if product.sizes.all %}
+            <div class="mb-4">
+                <h6>Select Size</h6>
+                <div class="btn-group btn-group-sm" data-toggle="buttons">
+                    {% for size in product.sizes.all %}
+                    <label class="btn btn-outline-secondary">
+                        <input type="radio" name="selected_size" value="{{ size.id }}"> {{ size.name }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
             {% if product.stock <= 0 %}
             <div class="alert alert-warning">
                 Out of Stock
             </div>
             {% else %}
-            <div class="d-flex gap-2 mb-4">
-                <select class="form-select w-auto" id="quantity" aria-label="Select quantity">
-                    {% for i in "12345" %}
+            <div class="gap-2 mb-4">
+                <select class="form-select w-25" id="quantity" aria-label="Select quantity">
+                    {% for i in "123456789" %}
                     <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
                     {% endfor %}
                 </select>
-                <button class="btn btn-primary" id="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                <button class="btn btn-primary mt-5" id="add-to-cart-btn" data-product-id="{{ product.id }}"><i class="fas fa-shopping-cart m-2"></i>Add to Cart</button>
             </div>
             <p class="text-success">In Stock ({{ product.stock }} available)</p>
             {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const addToCartBtn = document.getElementById('add-to-cart-btn');
-        const quantitySelect = document.getElementById('quantity');
-        
-        if (addToCartBtn) {
-            addToCartBtn.addEventListener('click', async function() {
-                const productId = this.dataset.productId;
-                const quantity = quantitySelect.value;
-                
-                try {
-                    const response = await fetch(`/cart/add/${productId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-CSRFToken': getCookie('csrftoken')
-                        },
-                        body: `quantity=${quantity}`
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Show success message
-                        alert(data.message);
-                        
-                        // Update cart count in navbar if it exists
-                        const cartCountElement = document.getElementById('cart-count');
-                        if (cartCountElement) {
-                            cartCountElement.textContent = data.cart_count;
-                        }
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while adding to cart.');
-                }
-            });
-        }
-        
-        // Get CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    });
-</script>
 {% endblock %}
